@@ -1,3 +1,4 @@
+
 CREATE DATABASE IF NOT EXISTS `TaskMentor`;
 USE `TaskMentor`;
 
@@ -27,12 +28,9 @@ CREATE TABLE `Aluno` (
 
 CREATE TABLE `Selo` (
 	`idSelo` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	`tipo` VARCHAR(150) NOT NULL,
+	`tipo` VARCHAR(150) NOT NULL
 	
-	`idAluno` INTEGER,
-	CONSTRAINT FK_ID_ALUNO
-	FOREIGN KEY(idAluno)
-	REFERENCES `Aluno`(idAluno)
+
 );
 
 CREATE TABLE `SeloRecebido` (
