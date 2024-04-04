@@ -94,7 +94,7 @@
 
   if ($requestData["operation"] == "read") {
     try {
-      $sql = "SELECT Aluno.nome, Aluno.email, Aluno.token, ImageProfile.path AS imageProfilePath
+      $sql = "SELECT Aluno.nome, Aluno.email, ImageProfile.path AS imageProfilePath
         FROM Aluno
         INNER JOIN ImageProfile ON Aluno.idImageProfile = ImageProfile.idImageProfile";
 
@@ -301,5 +301,4 @@
       return;
     }
   }
-  
 ?>
