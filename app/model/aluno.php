@@ -4,41 +4,41 @@
   $requestData = $_REQUEST;
   $dados = array();
 
-  if($requestData["operation"] == "register") {
-    if(empty($requestData["nome"])) {
-      echo json_encode($dados = array (
+  if ($requestData["operation"] == "register") {
+    if (empty($requestData["nome"])) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "O nome não pode estar vazio"
       ));
       return;
     }
 
-    if(empty($requestData["email"])) {
-      echo json_encode($dados = array (
+    if (empty($requestData["email"])) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "O email não foi informado"
       ));
       return;
     }
 
-    if(empty($requestData["senha"])) {
-      echo json_encode($dados = array (
+    if (empty($requestData["senha"])) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "A senha não foi definida"
       ));
       return;
     }
 
-    if(empty($requestData["confirmarSenha"])) {
-      echo json_encode($dados = array (
+    if (empty($requestData["confirmarSenha"])) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "Por favor, confirme sua senha"
       ));
       return;
     }
 
-    if(empty($requestData["idImageProfile"])) {
-      echo json_encode($dados = array (
+    if (empty($requestData["idImageProfile"])) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "Nenhum avatar foi escolhido"
       ));
@@ -51,8 +51,8 @@
     $confirmarSenha = $requestData["confirmarSenha"];
     $idImageProfile = $requestData["idImageProfile"];
 
-    if($senha !== $confirmarSenha) {
-      echo json_encode($dados = array (
+    if ($senha !== $confirmarSenha) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "Suas senhas estão diferentes"
       ));
@@ -63,8 +63,8 @@
     $stmt = $database->prepare($sql);
     $stmt->execute([$email]);
 
-    if($stmt->rowCount() > 0) {
-      echo json_encode($dados = array (
+    if ($stmt->rowCount() > 0) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "Não foi possível cadastrar pois já existe um usuário com esse e-mail"
       ));
@@ -77,14 +77,13 @@
       $stmt = $database->prepare($sql);
       $stmt->execute([$nome, $email, $senha, $idImageProfile]);
 
-      echo json_encode($dados = array (
+      echo json_encode($dados = array(
         "type" => "success",
         "message" => "Cadastro realizado com sucesso!"
       ));
       return;
-
-    } catch(PDOException $err) {
-      echo json_encode($dados = array (
+    } catch (PDOException $err) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "Não foi possível cadastrar um novo usuário",
         "more" => $err->getMessage()
@@ -93,16 +92,16 @@
     }
   }
 
-  if($requestData["operation"] == "read") {
+  if ($requestData["operation"] == "read") {
     try {
       $sql = "SELECT Aluno.nome, Aluno.email, ImageProfile.path AS imageProfilePath
-      FROM Aluno
-      INNER JOIN ImageProfile ON Aluno.idImageProfile = ImageProfile.idImageProfile";
+        FROM Aluno
+        INNER JOIN ImageProfile ON Aluno.idImageProfile = ImageProfile.idImageProfile";
 
       $stmt = $database->prepare($sql);
       $stmt->execute();
 
-      if($stmt->rowCount() == 0) {
+      if ($stmt->rowCount() == 0) {
         echo json_encode($dados = array(
           "type" => "success",
           "message" => "Não há registros salvos"
@@ -115,8 +114,8 @@
       }
 
       echo json_encode($dados);
-    } catch(PDOException $err) {
-      echo json_encode($dados = array (
+    } catch (PDOException $err) {
+      echo json_encode($dados = array(
         "type" => "error",
         "message" => "Não foi possível listar os alunos"
       ));
@@ -124,8 +123,8 @@
     }
   }
 
-  if($requestData["operation"] == "login") {
-    if(empty($requestData["email"])) {
+  if ($requestData["operation"] == "login") {
+    if (empty($requestData["email"])) {
       echo json_encode($dados = array(
         "type" => "error",
         "message" => "E-mail não foi informado"
@@ -134,7 +133,7 @@
       return;
     }
 
-    if(empty($requestData["senha"])) {
+    if (empty($requestData["senha"])) {
       echo json_encode($dados = array(
         "type" => "error",
         "message" => "A senha não foi informada"
@@ -153,8 +152,8 @@
       $row = $stmt->fetch();
       if ($stmt->rowCount() <= 0 || !$row || $senha !== $row["senha"]) {
         echo json_encode($dados = array(
-            "type" => "error",
-            "message" => "Usuário ou Senha inválidos",
+          "type" => "error",
+          "message" => "Usuário ou Senha inválidos",
         ));
         return;
       }
@@ -170,7 +169,7 @@
         "type" => "success",
         "message" => "Login realizado com sucesso",
       ));
-    } catch(PDOException $err) {
+    } catch (PDOException $err) {
       echo json_encode($dados = array(
         "type" => "error",
         "message" => "Falha ao realizar login",
@@ -180,8 +179,8 @@
     }
   }
 
-  if($requestData["operation"] == "delete") {
-    if(empty($requestData["token"])) {
+  if ($requestData["operation"] == "delete") {
+    if (empty($requestData["token"])) {
       echo json_encode($dados = array(
         "type" => "error",
         "message" => "Token de autenticação inválido",
@@ -189,7 +188,7 @@
       return;
     }
 
-    if(empty($requestData["senha"])) {
+    if (empty($requestData["senha"])) {
       echo json_encode($dados = array(
         "type" => "error",
         "message" => "Informe sua senha",
@@ -200,28 +199,28 @@
     $senha = $requestData["senha"];
     $token = $requestData["token"];
 
-    $sql = "SELECT senha FROM Aluno WHERE token = ?";
-    $stmt = $database->prepare($sql);
-    $stmt->execute([$token]);
-
-    $row = $stmt->fetch();
-    if($stmt->rowCount() <= 0) { 
-      echo json_encode($dados = array(
-        "type" => "error",
-        "message" => "Não foi possível excluir essa conta porque ela não existe",
-      ));
-      return;
-    }
-
-    if($senha !== $row["senha"]) {
-      echo json_encode($dados = array(
-        "type" => "error",
-        "message" => "Senha inválida",
-      ));
-      return;
-    }
-
     try {
+      $sql = "SELECT * FROM Aluno WHERE token = ? AND tempoExpiracao > ?";
+      $stmt = $database->prepare($sql);
+      $stmt->execute([$token, time()]);
+
+      $row = $stmt->fetch();
+      if ($stmt->rowCount() <= 0) {
+        echo json_encode($dados = array(
+          "type" => "error",
+          "message" => "Token de autenticação inválido ou expirado",
+        ));
+        return;
+      }
+
+      if ($senha !== $row["senha"]) {
+        echo json_encode($dados = array(
+          "type" => "error",
+          "message" => "Senha inválida",
+        ));
+        return;
+      }
+
       $sql = "DELETE FROM Aluno WHERE token = ?";
       $stmt = $database->prepare($sql);
       $stmt->execute([$token]);
@@ -230,7 +229,7 @@
         "type" => "success",
         "message" => "Conta excluída com sucesso",
       ));
-    } catch(PDOException $err) {
+    } catch (PDOException $err) {
       echo json_encode($dados = array(
         "type" => "error",
         "message" => "Não foi possível excluir essa conta",
@@ -240,4 +239,66 @@
     }
   }
 
+  if($requestData["operation"] == "update") {
+    if (empty($requestData["token"])) {
+      echo json_encode($dados = array(
+        "type" => "error",
+        "message" => "Token de autenticação inválido",
+      ));
+      return;
+    }
+
+    $token = $requestData["token"];
+    $nome = $requestData["nome"];
+    $email = $requestData["email"];
+    $senha = $requestData["senha"];
+    $confirmarSenha = $requestData["confirmarSenha"];
+    $idImageProfile = $requestData["idImageProfile"];
+
+    try {
+      $sql = "SELECT * FROM Aluno WHERE token = ? AND tempoExpiracao > ?";
+      $stmt = $database->prepare($sql);
+      $stmt->execute([$token, time()]);
+
+      $row = $stmt->fetch();
+      if ($stmt->rowCount() <= 0) {
+        echo json_encode($dados = array(
+          "type" => "error",
+          "message" => "Token de autenticação inválido ou expirado",
+        ));
+        return;
+      }
+
+      if(empty($nome)) $nome = $row['nome'];
+      if(empty($email)) $email = $row['email'];
+      if(empty($senha)) $senha = $row['senha'];
+      if(empty($confirmarSenha)) $confirmarSenha = $row['senha'];
+      if(empty($idImageProfile)) $idImageProfile = $row['idImageProfile'];
+
+      if($senha !== $confirmarSenha) {
+        echo json_encode($dados = array(
+          "type" => "error",
+          "message" => "Suas senhas estão diferentes"
+        ));
+        return;
+      }
+
+      $sql = "UPDATE Aluno SET nome = ?, email = ?, senha = ?, idImageProfile = ? WHERE token = ?";
+      $stmt = $database->prepare($sql);
+      $stmt->execute([$nome, $email, $senha, $idImageProfile, $token]);
+
+      echo json_encode($dados = array(
+        "type" => "succes",
+        "message" => "Informações atualizadas"
+      ));
+
+    } catch(PDOException $err) {
+      echo json_encode($dados = array(
+        "type" => "error",
+        "message" => "Não foi possível atualizar suas informações",
+        "more" => $err->getMessage()
+      ));
+      return;
+    }
+  }
 ?>
