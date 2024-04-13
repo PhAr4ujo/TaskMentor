@@ -50,7 +50,7 @@ CREATE TABLE `Tarefa` (
 	`idTarefa` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	`titulo` VARCHAR(255) NULL,
 	`descricao` TEXT NULL,
-	`status` ENUM("pendente", "em andamento", "concluída", "em atraso") NOT NULL,
+	`status` ENUM("pendente", "em andamento", "concluída", "em atraso", "arquivada") NOT NULL,
 	`prioridde` ENUM("baixa", "média", "alta", "muito alta") NOT NULL,
 	`dataCriacao` DATETIME NOT NULL,
 	`dataVencimento` DATETIME NOT NULL,

@@ -1,106 +1,113 @@
 <?php
 
-  include_once "../../database/connection.php";
-  $requestData = $_REQUEST;
-  $dados = array();
+include_once "../../database/connection.php";
+$requestData = $_REQUEST;
+$dados = array();
 
-  if($requestData["operation"] == "create") {
-    if(empty($requestData["nome"])) {
-      echo json_encode($dados = array(
-        "type" => "error",
-        "message" => "Nome da matéria está vazio"
-      ));
-      return;
-    }
-
-    if(empty($requestData["docente"])) {
-      echo json_encode($dados = array(
-        "type" => "error",
-        "message" => "Essa matéria precisa ter um professor"
-      ));
-      return;
-    }
-
-    $nome = $requestData["nome"];
-    $docente = $requestData["docente"];
-
-    try {
-      $sql = "SELECT * FROM Materia WHERE nome = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$nome]);
-
-      if($stmt->rowCount() > 0) {
-        echo json_encode($dados = array(
-          "type" => "error",
-          "message" => "Já existe uma matéria com esse nome cadastrada"
-        ));
-        return;
-      } 
-
-      $idMateriaCriptografado = substr(md5(uniqid(rand(), true)), 0, 16);
-
-      $sql = "INSERT INTO Materia (idMateriaCriptografado, nome, docente) VALUES (?, ?, ?)";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$idMateriaCriptografado, $nome, $docente]);
-
-      
-      echo json_encode($dados = array(
-        "type" => "success",
-        "message" => "Matéria adicionada com sucesso"
-      ));
-      return;
-      
-    } catch(PDOException $err) {
-      echo json_encode($dados = array(
-        "type" => "error",
-        "message" => "Não foi possível criar uma nova matéria",
-        "more" => $err->getMessage()
-      ));
-      return;
-    }
+if ($requestData["operation"] == "create") {
+  if (empty($requestData["nome"])) {
+    echo json_encode($dados = array(
+      "type" => "error",
+      "message" => "Nome da matéria está vazio"
+    ));
+    return;
   }
 
-  if($requestData["operation"] == "read") {
-    if(empty($requestData["idMateria"])) {
-      try {
-        $sql = "SELECT * FROM Materia";
-        $stmt = $database->prepare($sql);
-        $stmt->execute();
+  if (empty($requestData["docente"])) {
+    echo json_encode($dados = array(
+      "type" => "error",
+      "message" => "Essa matéria precisa ter um professor"
+    ));
+    return;
+  }
 
-        if($stmt->rowCount() == 0) {
-          echo json_encode($dados = array(
-            "type" => "success",
-            "message" => "Não há registros salvos"
-          ));
-          return;
-        }
-  
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-          $dados[] = $row;
-        }
+  if (empty($requestData["token"])) {
+    echo json_encode($dados = array(
+      "type" => "error",
+      "message" => "Token de autenticação não foi informado"
+    ));
+    return;
+  }
 
-        echo json_encode($dados);
-        return;
+  $nome = $requestData["nome"];
+  $docente = $requestData["docente"];
+  $token = $requestData["token"];
 
-      } catch(PDOException $err) {
-        echo json_encode($dados = array(
-          "type" => "error",
-          "message" => "Não foi possível listar as matérias",
-          "more" => $err->getMessage()
-        ));
-        return;
-      }
+  try {
+
+    $sql = "SELECT * FROM Aluno WHERE token = ? AND tempoExpiracao > ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$token, time()]);
+
+    $row = $stmt->fetch();
+    if ($stmt->rowCount() <= 0) {
+      throw new PDOException("Token de autenticação inválido ou expirado");
     }
 
-    try {
-      $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$requestData["idMateria"]]);
+    $idAluno = $row["idAluno"];
 
-      if($stmt->rowCount() == 0) {
+    $sql = "SELECT * FROM Materia WHERE nome = ? AND idAluno = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$nome, $idAluno]);
+
+    if ($stmt->rowCount() > 0) {
+      echo json_encode($dados = array(
+        "type" => "error",
+        "message" => "Já existe uma matéria com esse nome cadastrada"
+      ));
+      return;
+    }
+
+    $idMateriaCriptografado = substr(md5(uniqid(rand(), true)), 0, 16);
+
+    $sql = "INSERT INTO Materia (idMateriaCriptografado, nome, docente, idAluno) VALUES (?, ?, ?, ?)";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$idMateriaCriptografado, $nome, $docente, $idAluno]);
+
+
+    echo json_encode($dados = array(
+      "type" => "success",
+      "message" => "Matéria adicionada com sucesso"
+    ));
+    return;
+  } catch (PDOException $err) {
+    echo json_encode($dados = array(
+      "type" => "error",
+      "message" => "Não foi possível criar uma nova matéria",
+      "more" => $err->getMessage()
+    ));
+    return;
+  }
+}
+
+if ($requestData["operation"] == "read") {
+  try {
+    if (empty($requestData["token"])) {
+      throw new PDOException("Token não informado");
+    }
+
+    $token = $requestData["token"];
+
+    $sql = "SELECT * FROM Aluno WHERE token = ? AND tempoExpiracao > ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$token, time()]);
+
+    $row = $stmt->fetch();
+    if ($stmt->rowCount() <= 0) {
+      throw new PDOException("Token de autenticação inválido ou expirado");
+    }
+
+    $idAluno = $row["idAluno"];
+
+    if (empty($requestData["idMateriaCriptografado"])) {
+      $sql = "SELECT * FROM Materia WHERE idAluno = ?";
+      $stmt = $database->prepare($sql);
+      $stmt->execute([$idAluno]);
+
+      if ($stmt->rowCount() == 0) {
         echo json_encode($dados = array(
-          "type" => "error",
-          "message" => "Matéria não localizada",
+          "type" => "success",
+          "message" => "Não há matérias para listar"
         ));
         return;
       }
@@ -111,20 +118,60 @@
 
       echo json_encode($dados);
       return;
+    }
 
-    } catch(PDOException $err) {
+    $idMateria = $requestData["idMateriaCriptografado"];
+
+    $sql = "SELECT * FROM Materia WHERE idAluno = ? AND idMateriaCriptografado = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$idAluno, $idMateria]);
+
+    if ($stmt->rowCount() == 0) {
       echo json_encode($dados = array(
-        "type" => "error",
-        "message" => "Não foi possível listar as matérias",
-        "more" => $err->getMessage()
+        "type" => "success",
+        "message" => "Não foi possível localizar essa matéria"
       ));
       return;
     }
-  }
 
-  if($requestData["operation"] == "update") {
-    if(empty($requestData["idMateria"])) {
-      echo json_encode($dados = array (
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $dados[] = $row;
+    }
+
+    echo json_encode($dados);
+    return;
+  } catch (PDOException $err) {
+    echo json_encode($dados = array(
+      "type" => "error",
+      "message" => "Não foi listar as matérias",
+      "more" => $err->getMessage()
+    ));
+    return;
+  }
+}
+
+if ($requestData["operation"] == "update") {
+
+  try {
+    if (empty($requestData["token"])) {
+      throw new PDOException("Token não informado");
+    }
+
+    $token = $requestData["token"];
+
+    $sql = "SELECT * FROM Aluno WHERE token = ? AND tempoExpiracao > ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$token, time()]);
+
+    $row = $stmt->fetch();
+    if ($stmt->rowCount() <= 0) {
+      throw new PDOException("Token de autenticação inválido ou expirado");
+    }
+
+    $idAluno = $row["idAluno"];
+
+    if (empty($requestData["idMateria"])) {
+      echo json_encode($dados = array(
         "type" => "erro",
         "message" => "Não foi possível localizar essa matéria"
       ));
@@ -133,58 +180,76 @@
 
     $idMateria = $requestData["idMateria"];
 
-    try {
-      $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$idMateria]);
+    $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado = ? AND idAluno = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$idMateria, $idAluno]);
 
-      $data = $stmt->fetch();
+    $data = $stmt->fetch();
 
-      if($stmt->rowCount() == 0) {
-        echo json_encode($dados = array (
-          "type" => "erro",
-          "message" => "Não foi possível alterar essa matéria porque ela não existe",
-        ));
-        return;
-      }
-
-      if(empty($requestData["nome"])) $requestData["nome"] = $data["nome"];
-      if(empty($requestData["docente"])) $requestData["docente"] = $data["docente"];
-
-      $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado != ? AND nome = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$idMateria, $requestData["nome"]]);
-
-      if($stmt->rowCount() > 0) {
-        echo json_encode($dados = array (
-          "type" => "erro",
-          "message" => "Já existe uma matéria com esse nome",
-        ));
-        return;
-      }
-
-      $sql = "UPDATE Materia SET nome = ?, docente = ? WHERE idMateriaCriptografado = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$requestData["nome"], $requestData["docente"], $idMateria]);
-
-      echo json_encode($dados = array (
-        "type" => "success",
-        "message" => "Materia atualizada com sucesso",
-      ));
-      return;
-    } catch(PDOException $err) {
-      echo json_encode($dados = array (
+    if ($stmt->rowCount() == 0) {
+      echo json_encode($dados = array(
         "type" => "erro",
-        "message" => "Não foi possível alterar essa matéria",
-        "more" => $err->getMessage()
+        "message" => "Não foi possível alterar essa matéria porque ela não existe",
       ));
       return;
     }
-  }
 
-  if($requestData["operation"] == "delete") {
-    if(empty($requestData["idMateria"])) {
-      echo json_encode($dados = array (
+    if (empty($requestData["nome"])) $requestData["nome"] = $data["nome"];
+    if (empty($requestData["docente"])) $requestData["docente"] = $data["docente"];
+
+    $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado != ? AND idAluno = ? AND nome = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$idMateria, $idAluno, $requestData["nome"]]);
+
+    if ($stmt->rowCount() > 0) {
+      echo json_encode($dados = array(
+        "type" => "erro",
+        "message" => "Já existe uma matéria com esse nome",
+      ));
+      return;
+    }
+
+    $sql = "UPDATE Materia SET nome = ?, docente = ? WHERE idMateriaCriptografado = ? AND idAluno = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$requestData["nome"], $requestData["docente"], $idMateria, $idAluno]);
+
+    echo json_encode($dados = array(
+      "type" => "success",
+      "message" => "Materia atualizada com sucesso",
+    ));
+    return;
+  } catch (PDOException $err) {
+    echo json_encode($dados = array(
+      "type" => "erro",
+      "message" => "Não foi possível alterar essa matéria",
+      "more" => $err->getMessage()
+    ));
+    return;
+  }
+}
+
+if ($requestData["operation"] == "delete") {
+
+  try {
+    if (empty($requestData["token"])) {
+      throw new PDOException("Token não informado");
+    }
+
+    $token = $requestData["token"];
+
+    $sql = "SELECT * FROM Aluno WHERE token = ? AND tempoExpiracao > ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$token, time()]);
+
+    $row = $stmt->fetch();
+    if ($stmt->rowCount() <= 0) {
+      throw new PDOException("Token de autenticação inválido ou expirado");
+    }
+
+    $idAluno = $row["idAluno"];
+
+    if (empty($requestData["idMateria"])) {
+      echo json_encode($dados = array(
         "type" => "erro",
         "message" => "Não foi possível localizar essa matéria"
       ));
@@ -193,39 +258,33 @@
 
     $idMateria = $requestData["idMateria"];
 
-    try {
-      $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$idMateria]);
+    $sql = "SELECT * FROM Materia WHERE idMateriaCriptografado = ? AND idAluno = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$idMateria, $idAluno]);
 
-      if($stmt->rowCount() == 0) {
-        echo json_encode($dados = array (
-          "type" => "erro",
-          "message" => "Não foi possível excluir essa matéria porque ela não existe"
-        ));
-        return;
-      }
-
-      $sql = "DELETE FROM Materia WHERE idMateriaCriptografado = ?";
-      $stmt = $database->prepare($sql);
-      $stmt->execute([$idMateria]);
-
-      echo json_encode($dados = array (
-        "type" => "success",
-        "message" => "Matéria excluída"
-      ));
-      return;
-
-    } catch(PDOException $err) {
-      echo json_encode($dados = array (
+    if ($stmt->rowCount() == 0) {
+      echo json_encode($dados = array(
         "type" => "erro",
-        "message" => "Não foi possível exlcuir essa matéria",
-        "more" => $err->getMessage()
+        "message" => "Não foi possível excluir essa matéria porque ela não existe"
       ));
       return;
     }
+
+    $sql = "DELETE FROM Materia WHERE idMateriaCriptografado = ? AND  idAluno = ?";
+    $stmt = $database->prepare($sql);
+    $stmt->execute([$idMateria, $idAluno]);
+
+    echo json_encode($dados = array(
+      "type" => "success",
+      "message" => "Matéria excluída"
+    ));
+    return;
+  } catch (PDOException $err) {
+    echo json_encode($dados = array(
+      "type" => "erro",
+      "message" => "Não foi possível exlcuir essa matéria",
+      "more" => $err->getMessage()
+    ));
+    return;
   }
-
-
-
-?>
+}
