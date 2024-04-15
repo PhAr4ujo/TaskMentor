@@ -86,22 +86,6 @@ if ($requestData["operation"] == "create") {
       return;
     }
 
-    // $sql = "SELECT * FROM Aluno WHERE idAluno = ?";
-    // $stmt = $database->prepare($sql);
-    // $stmt->execute([$idAluno]);
-
-    // if ($stmt->rowCount() == 0) {
-    //   throw new PDOException("Esse aluno não existe");
-    // }
-
-    // $sql = "SELECT * FROM Materia WHERE idMateria = ?";
-    // $stmt = $database->prepare($sql);
-    // $stmt->execute([$idMateria]);
-
-    // if ($stmt->rowCount() == 0) {
-    //   throw new PDOException("Essa matéria não existe");
-    // }
-
     $sql = "INSERT INTO Tarefa (titulo, descricao,`status`, prioridade, dataCriacao, dataVencimento, idTarefaCriptografado, idAluno, idMateria) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $database->prepare($sql);
