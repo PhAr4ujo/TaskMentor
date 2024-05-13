@@ -1,7 +1,8 @@
 <?php
 
 include_once "../../database/connection.php";
-$requestData = $_REQUEST;
+$inputJSON = file_get_contents('php://input');
+$requestData = json_decode($inputJSON, true);
 $dados = array();
 
 if ($requestData["operation"] == "create") {

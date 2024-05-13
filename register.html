@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskMentor | Cadastro</title>
+  <!-- link-css -->
+  <link rel="stylesheet" href="./public/css/style.css">
+  <!-- link-tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- link-tailwind-config -->
+  <script module="es" src="./app/utils/tailwind.config.js"></script>
+  <!-- link-tailwind-styles -->
+  <script src="./public/css/customClasses.tailwind.js"></script>
+  <!-- link-sweet-alert -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.7/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <!-- script-login-js -->
+  <script type="module">
+    import { cadastro } from "./app/controller/aluno.controller.js";
+    cadastro()
+  </script>
+</head>
+
+<body class="dark:bg-tm-dark dark:text-white w-screen h-screen flex items-center justify-center overflow-hidden">
+  <main class="sm:border sm:border-zinc-200 sm:dark:border-[#424242]  container sm:w-[450px] w-full p-4 sm:p-10 sm:py-14 sm:pb-11 rounded-[20px]">
+    <form id="form-cadastro" action="/" method="post">
+      <section id="section-cadastro-inicial" class="block">
+        <h2 class="text-[45px] text-[#242424] dark:text-white  font-extrabold">Cadastro</h2>
+        <p class="mt-2 font-meidum text-zinc-500 text-sm w-56">Use suas credenciais para criar uma conta na plataforma..</p>
+        <section class="my-10 flex flex-col">
+          <article class="text-zinc-300 mb-6">
+            <label for="input-nome" class="font-medium  text-zinc-500 dark:text-zinc-400  block mb-1">Nome</label>
+            <div class="flex relative items-center border rounded-lg overflow-hidden transition-all duration-300 border-zinc-100 dark:border-[#424242] focus-within:border-zinc-400">
+              <input type="text" autocomplete="off" class="text-zinc-500 focus:text-[#242424] dark:focus:text-zinc-200 py-3 pr-1.5 bg-inherit px-4 w-[calc(100%-50px)] outline-none placeholder-zinc-300 dark:placeholder-[#797979] font-light" name="input-nome" id="input-nome" placeholder="Informe o seu nome">
+              <svg xmlns="http://www.w3.org/2000/svg" class="dark:text-[#797979] mr-4 h-[24px] w-[24px] absolute right-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            </div>
+          </article>
+          <article class="text-zinc-300 mb-6">
+            <label for="input-email" class="font-medium  text-zinc-500 dark:text-zinc-400  block mb-1">E-mail</label>
+            <div class="flex relative items-center border rounded-lg overflow-hidden transition-all duration-300 border-zinc-100 dark:border-[#424242] focus-within:border-zinc-400">
+              <input type="email" autocomplete="off" class="text-zinc-500 focus:text-[#242424] dark:focus:text-zinc-200 py-3 pr-1.5 bg-inherit px-4 w-[calc(100%-50px)] outline-none placeholder-zinc-300 dark:placeholder-[#797979] font-light" name="input-email" id="input-email" placeholder="Informe o seu nome" required>
+              <svg xmlns="http://www.w3.org/2000/svg" class="dark:text-[#797979] mr-4 h-[24px] w-[24px] absolute right-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+          </article>
+          
+          <p class="text-sm font-light">Já tem uma conta? <a href="./login.html" class="font-bold">Entrar.</a></p>
+        </section>
+        <button id="button-cadastro-inicial" class="px-8 py-2 rounded-md bg-zinc-200 dark:bg-[#181818] dark:text-white float-right">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-[24px] w-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16"/><path d="M2 12H22"/></svg>
+        </button>
+      </section>
+      <section id="section-cadastro-senha" class="hidden">
+        <h2 class="text-[45px] text-[#242424] dark:text-white  font-extrabold">Cadastro</h2>
+        <p class="mt-2 font-meidum text-zinc-500 text-sm w-56">Agora, crie uma senha de acesso para o sistema e logo após confirme.</p>
+        <section class="my-10 flex flex-col">
+          <article class="text-zinc-300 mb-6">
+            <label for="input-senha" class="font-medium  text-zinc-500 dark:text-zinc-400  block mb-1">Senha</label>
+            <div class="flex relative items-center border rounded-lg overflow-hidden transition-all duration-300 border-zinc-100 dark:border-[#424242] focus-within:border-zinc-400">
+              <input type="password" autocomplete="off" class="text-zinc-500 focus:text-[#242424] dark:focus:text-zinc-200 py-3 pr-1.5 bg-inherit px-4 w-[calc(100%-50px)] outline-none placeholder-zinc-300 dark:placeholder-[#797979] font-light" name="input-senha" id="input-senha" placeholder="Digite sua senha">
+              <button class="dark:text-[#797979] mr-4 h-[24px] w-[24px] absolute right-0" id="button-ver-senha">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+              </button>
+            </div>
+          </article>
+
+          <article class="text-zinc-300 mb-6">
+            <label for="input-confirmar-senha" class="font-medium  text-zinc-500 dark:text-zinc-400  block mb-1">Confirmar senha</label>
+            <div class="flex relative items-center border rounded-lg overflow-hidden transition-all duration-300 border-zinc-100 dark:border-[#424242] focus-within:border-zinc-400">
+              <input type="password" autocomplete="off" class="text-zinc-500 focus:text-[#242424] dark:focus:text-zinc-200 py-3 pr-1.5 bg-inherit px-4 w-[calc(100%-50px)] outline-none placeholder-zinc-300 dark:placeholder-[#797979] font-light" name="input-confirmar-senha" id="input-confirmar-senha" placeholder="Confirme sua senha">
+              <svg xmlns="http://www.w3.org/2000/svg" class="dark:text-[#797979] mr-4 h-[24px] w-[24px] absolute right-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+          </article>
+        </section>
+        <button id="button-cadastro-senha" class="px-8 py-2 rounded-md bg-zinc-200 dark:bg-[#181818] dark:text-white float-right">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-[24px] w-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16"/><path d="M2 12H22"/></svg>
+        </button>
+        <button id="button-voltar-sessao-inicial" class="px-8 py-2 rounded-md bg-zinc-50 text-zinc-400 dark:bg-zinc-700 dark:text-white float-left">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-[24px] w-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
+        </button>
+      </section>
+      <section id="section-cadastro-final" class="hidden">
+        <h2 class="text-[45px] text-[#242424] dark:text-white  font-extrabold">Cadastro</h2>
+        <p class="mt-2 font-meidum text-zinc-500 text-sm w-56">Quase lá! Para finalizar, escolha seu avatar</p>
+        <section class="my-10 flex flex-col">
+          <aside id="section-imagens-perfil" class="grid place-items-center grid-cols-3 gap-1 gap-y-3">
+          </aside>
+        </section>
+        <button id="button-cadastro-final" class="px-8 py-2 rounded-md bg-tm-blue text-white float-right">Cadastrar</button>
+        <button id="button-voltar-sessao-senha" class="px-8 py-2 rounded-md bg-zinc-50 text-zinc-400  dark:bg-zinc-700 dark:text-white float-left">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-[24px] w-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
+        </button>
+      </section>
+    </form>
+  </main>
+</body>
+
+</html>

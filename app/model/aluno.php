@@ -1,8 +1,17 @@
 <?php
 
   require_once "../../database/connection.php";
-  $requestData = $_REQUEST;
+  $inputJSON = file_get_contents('php://input');
+  $requestData = json_decode($inputJSON, true);
   $dados = array();
+
+  if(empty($requestData["operation"])) {
+    echo json_encode($dados = array(
+      "type" => "error",
+      "message" => "Operacao invalida"
+    ));
+    return;
+  }
 
   if ($requestData["operation"] == "register") {
     if (empty($requestData["nome"])) {
@@ -167,6 +176,7 @@
       echo json_encode($dados = array(
         "type" => "success",
         "message" => "Login realizado com sucesso",
+        "token" => $token,
       ));
     } catch (PDOException $err) {
       echo json_encode($dados = array(

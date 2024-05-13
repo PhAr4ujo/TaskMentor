@@ -19,6 +19,8 @@ CREATE TABLE `Aluno` (
 	`nome` VARCHAR(150) NOT NULL,
 	`email` VARCHAR(255) NOT NULL,
 	`senha` VARCHAR(255) NOT NULL,
+	`token` TEXT,
+	`tempoExpiracao` INT,
 	
 	`idImageProfile` INTEGER,
 	FOREIGN KEY(idImageProfile)
@@ -65,8 +67,5 @@ CREATE TABLE `Tarefa` (
 	REFERENCES `Materia`(idMateria)
 	ON DELETE CASCADE
 );
-
-
-
 
 

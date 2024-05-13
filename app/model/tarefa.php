@@ -1,6 +1,7 @@
 <?php
 include_once "../../database/connection.php";
-$requestData = $_REQUEST;
+$inputJSON = file_get_contents('php://input');
+$requestData = json_decode($inputJSON, true);
 $dados = array();
 $statusDeTarefa = array("pendente", "em andamento", "concluída", "em atraso", "arquivada");
 $prioridadesDeTarefa = array("baixa", "média", "alta", "muito alta");

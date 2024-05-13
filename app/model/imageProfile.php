@@ -1,13 +1,15 @@
 <?php
   include_once "../../database/connection.php";
-  $requesData = $_REQUEST;
+
+  $requestData = $_REQUEST;
   $dados = array();
+
   $destino =  realpath("../../tmp/avatar/") . "/";
   $extensoes = array ("image/png", "image/jpg", "image/jpeg");
 
 
-  if($requesData["operation"] == "create") {
-    if(empty($requesData["nome"])) {
+  if($requestData["operation"] == "create") {
+    if(empty($requestData["nome"])) {
       echo json_encode($dados = array (
         "type" => "error",
         "message" => "Nome da imagem está em branco"
@@ -25,7 +27,7 @@
 
     $sql = "SELECT * FROM ImageProfile WHERE nome = ?";
     $stmt = $database->prepare($sql);
-    $stmt->execute([$requesData["nome"]]);
+    $stmt->execute([$requestData["nome"]]);
 
     if($stmt->rowCount() > 0) {
       echo json_encode($dados = array (
@@ -36,7 +38,7 @@
     }
 
     $idImagem = substr(md5(uniqid(rand(), true)), 0, 10);
-    $nome = $requesData["nome"];
+    $nome = $requestData["nome"];
     $file = $_FILES["imagem"];
     $arr = explode(".", $file["name"]);
     $fileExtension = $arr[1]; 
@@ -73,7 +75,7 @@
     }
   }
 
-  if($requesData["operation"] == "read") {
+  if($requestData["operation"] == "read") {
     try { 
       $sql = "SELECT * FROM ImageProfile";
       $stmt = $database->prepare($sql);
@@ -102,8 +104,8 @@
     }
   }
 
-  if($requesData["operation"] == "delete") {
-    if(empty($requesData["idImageProfile"])) {
+  if($requestData["operation"] == "delete") {
+    if(empty($requestData["idImageProfile"])) {
       echo json_encode($dados = array (
         "type" => "error",
         "message" => "ID da imagem não foi informado" 
@@ -113,7 +115,7 @@
 
     $sql = "SELECT * FROM ImageProfile WHERE idImageProfile = ?";
     $stmt = $database->prepare($sql);
-    $stmt->execute([$requesData["idImageProfile"]]);
+    $stmt->execute([$requestData["idImageProfile"]]);
 
     if($stmt->rowCount() == 0) {
       echo json_encode($dados = array(
@@ -129,7 +131,7 @@
       if(unlink($pathImage)) {
         $sql = "DELETE FROM ImageProfile WHERE idImageProfile = ?";
         $stmt = $database->prepare($sql);
-        $stmt->execute([$requesData["idImageProfile"]]);
+        $stmt->execute([$requestData["idImageProfile"]]);
   
         echo json_encode($dados = array (
           "type" => "success",
