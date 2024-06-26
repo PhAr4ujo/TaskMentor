@@ -64,7 +64,7 @@ if ($requestData["operation"] == "create") {
     if (empty($requestData["descricao"])) {
       $descricao = null;
     } else {
-      $descricao = $requestData["descricao$descricao"];
+      $descricao = $requestData["descricao"];
     }
     $status = $requestData["status"];
     $prioridade = $requestData["prioridade"];
